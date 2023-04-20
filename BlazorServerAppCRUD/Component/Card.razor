@@ -1,0 +1,64 @@
+﻿@page "/card"
+@using BlazorServerAppCRUD.Models;
+@using BlazorServerAppCRUD.Services;
+
+@inject IUserServices UserServices
+@inject NavigationManager NavigationManager
+
+
+<div class="row">
+    @foreach (var user in userList)
+    {
+        <div class="card" style="width: 20rem;">
+            <img src="/Image/default-avatar.png" class="card-img-top" alt="...">
+            <div class="card-body">
+                <h5 class="card-title">User: @user.Login</h5>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">Firstname: @user.FirstName</li>
+                <li class="list-group-item">Lastname: @user.LastName</li>
+                <li class="list-group-item">Email: @user.Email</li>
+            </ul>
+            <div class="card-body">
+                <button type="button" @onclick="(async () => await  NavigateToUserlist())" class="btn btn-success">Back</button>
+                <button type="button" @onclick="(async () => await  NavigateToUpdateUser(user.Id))" class="btn btn-primary">Edit</button>
+            </div>
+        </div>
+    }
+
+</div>
+
+
+
+
+@code {
+
+    protected List<UserEntity> userList = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetUserList();
+    }
+
+    protected async Task<List<UserEntity>> GetUserList()
+    {
+        var res = UserServices.GetAllUsers().ToList();
+
+        userList = res;
+        return userList;
+    }
+    
+    protected async Task NavigateToUserlist()
+    {
+        string pageURL = $"/user-list";
+
+        NavigationManager.NavigateTo(pageURL);
+    }
+
+    protected async Task NavigateToUpdateUser(int userId)
+    {
+        string pageURL = $"/update-user/{userId.ToString()}";
+
+        NavigationManager.NavigateTo(pageURL);
+    }
+}

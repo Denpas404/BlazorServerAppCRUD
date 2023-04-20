@@ -1,0 +1,113 @@
+﻿@page "/update-user/{Id:int}"
+
+@using BlazorServerAppCRUD.Models;
+@using BlazorServerAppCRUD.Services;
+
+@inject IUserServices UserServices
+@inject NavigationManager NavigationManager
+
+<PageTitle>Update User</PageTitle>
+
+<h1>Update User</h1>
+
+<EditForm Model="@user" OnValidSubmit="SaveUser">
+    <DataAnnotationsValidator />
+    <div class="mb-3">
+        <label for="FirstName" class="form-label">First Name</label>
+        <div class="col-md-4">
+            <InputText class="form-control" @bind-Value="user.FirstName" />
+        </div>
+        <ValidationMessage For="@(() => user.FirstName)" />
+    </div>
+    <div class="mb-3">
+        <label for="LastName" class="form-label">Last Name</label>
+        <div class="col-md-4">
+            <InputText class="form-control" @bind-Value="user.LastName" />
+        </div>
+        <ValidationMessage For="@(() => user.LastName)" />
+    </div>
+    <div class="mb-3">
+        <label for="EmailAddress" class="form-label">Email Address</label>
+        <div class="col-md-4">
+            <InputText class="form-control" @bind-Value="user.Email" />
+        </div>
+        <ValidationMessage For="@(() => user.Email)" />
+    </div>
+    <div class="mb-3">
+        <label for="Login" class="form-label">Login</label>
+        <div class="col-md-4">
+            <InputText class="form-control" @bind-Value="user.Login" />
+        </div>
+        <ValidationMessage For="@(() => user.Login)" />
+    </div>
+    <div class="mb-3">
+        <label for="Password" class="form-label">Password</label>
+        <div class="col-md-4">
+            <InputText class="form-control" @bind-Value="user.Password" />
+        </div>
+        <ValidationMessage For="@(() => user.Password)" />
+    </div>
+    <div class="mb-3">
+        <label for="Password2" class="form-label">Password2</label>
+        <div class="col-md-4">
+            <InputText class="form-control" @bind-Value="user.Password2" />
+        </div>
+        <ValidationMessage For="@(() => user.Password2)" />
+    </div>
+
+
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Save</button>
+        <button type="button" @onclick="(async () => Cancel())" class="btn btn-danger">Cancel</button>
+    </div>
+
+</EditForm>
+
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private bool ReadOnly = true;  // used to make StudentId read-only
+
+    protected UserEntity user = new();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        //string apiUrl = "https://localhost:7211/api/students/get-students-list";
+        //var response = await Http.GetAsync(apiUrl);
+        //response.EnsureSuccessStatusCode();
+        //string responseBodyJson = await response.Content.ReadAsStringAsync();
+
+        //var studentsLists = JsonConvert.DeserializeObject<List<StudentEntity>>(responseBodyJson);
+
+        var userList = UserServices.GetAllUsers();
+
+
+        user = userList.Where(x => x.Id == Id).FirstOrDefault();
+    }
+
+    protected async Task SaveUser()
+    {
+        //string apiUrl = "https://localhost:7211/api/students/update-user";
+        //var response = await Http.GetAsync(apiUrl);
+        //response.EnsureSuccessStatusCode();
+        //string responseBodyJson = await response.Content.ReadAsStringAsync();
+
+        
+        if (user.Id < 1)
+        {
+            return;
+        }
+
+        UserServices.UpdateUser(user);
+
+        //await Http.PostAsJsonAsync(apiUrl, student);
+        NavigationManager.NavigateTo("/user-list");
+    }
+
+    protected void Cancel()
+    {
+        NavigationManager.NavigateTo("/");
+    }
+}

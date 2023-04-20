@@ -1,0 +1,97 @@
+﻿@page "/user-list"
+@using BlazorServerAppCRUD.Models;
+@using BlazorServerAppCRUD.Services;
+
+@inject IUserServices UserServices
+@inject NavigationManager NavigationManager
+
+<PageTitle>User List</PageTitle>
+
+<h1>User List</h1>
+<p>
+    <button class="btn btn-primary" @onclick="(async () => await NavigateToAddUser())">Add New User</button>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>User Id</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Email Addressd</th>
+            <th>Login</th>
+            <th>Password</th>
+            <th>Password2</th>            
+            <th>Created On</th>
+            <th>Delete</th>
+            <th>Update</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in userList)
+        {
+            <tr>
+                <td>@user.Id</td>
+                <td>@user.FirstName</td>
+                <td>@user.LastName</td>
+                <td>@user.Email</td>
+                <td>@user.Login</td>
+                <td>@user.Password</td>
+                <td>@user.Password2</td>
+                <td>@user.CreateDate</td>
+                <td><button type="button" @onclick="(async () => await NavigateToUserDetails(user.Id))" class="btn btn-success">User Details</button></td>
+                <td><button type="button" @onclick="(async () => await  NavigateToUpdateUser(user.Id))" class="btn btn-primary">Edit</button></td>
+                <td><button type="button" @onclick="(async () => await DeleteUser(user.Id))" class="btn btn-danger">Delete</button></td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    protected List<UserEntity> userList = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetUserList();
+    }
+    
+    protected async Task<List<UserEntity>> GetUserList()
+    {
+        var res = UserServices.GetAllUsers().ToList();
+
+        userList = res;
+        return userList;
+    }
+    
+    protected async Task DeleteUser(int userId)
+    {
+        UserServices.DeleteUser(userId);
+        StateHasChanged();
+        await GetUserList();
+
+        //NavigationManager.NavigateTo("/");
+    }
+
+    protected async Task NavigateToUpdateUser(int userId)
+    {
+        string pageURL = $"/update-user/{userId.ToString()}";
+
+        NavigationManager.NavigateTo(pageURL);
+    }
+    
+    protected async Task NavigateToAddUser()
+    {
+        string pageURL = "/add-user";
+
+        NavigationManager.NavigateTo(pageURL);
+    }
+    
+    protected async Task NavigateToUserDetails(int userId)
+    {
+        string pageURL = $"/user-details/{userId.ToString()}";
+
+        NavigationManager.NavigateTo(pageURL);
+    }
+
+
+}

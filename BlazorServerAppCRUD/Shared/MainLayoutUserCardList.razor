@@ -1,0 +1,30 @@
+﻿@inherits LayoutComponentBase
+@inject NavigationManager NavigationManager
+
+<PageTitle>BlazorServerAppCRUD</PageTitle>
+
+<div class="page">
+    <div class="sidebar">
+        <NavMenu />
+    </div>
+
+    <main>
+        <div class="py-4 px-4">
+            <button class="btn btn-primary" @onclick="(async () => await NavigateToAddUser())">Add New User</button>
+        </div>
+
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+</div>
+
+@code {
+    protected async Task NavigateToAddUser()
+    {
+        string pageURL = "/add-user";
+
+        NavigationManager.NavigateTo(pageURL);
+    }
+    
+}

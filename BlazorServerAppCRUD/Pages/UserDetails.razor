@@ -1,0 +1,71 @@
+﻿@page "/user-details/{Id:int}"
+@using BlazorServerAppCRUD.Models;
+@using BlazorServerAppCRUD.Services;
+
+@inject IUserServices UserServices
+@inject NavigationManager NavigationManager
+
+
+<div class="position-absolute top-50 start-50 translate-middle " style="display: flex; justify-content: center;">
+    <div class="card " style="width: 28rem;">
+        <img src="/Image/default-avatar.png" class="card-img-top" alt="...">
+        <div class="card-body">
+            <h2 class="card-title" style="text-align: center;">@user.Login</h2>
+        </div>
+        <div style="display: flex; justify-content: center;">
+            <div>
+                <p>Firstname: @user.FirstName</p>
+                <p>Lastname: @user.LastName</p>
+                <p>Email: @user.Email</p>
+            </div>
+        </div>
+        @*<ul class="list-group list-group-flush " style="word-spacing: 20px; white-space: nowrap; overflow: hidden;">
+        <li class="list-group-item" >Firstname: @user.FirstName</li>
+        <li class="list-group-item">Lastname: @user.LastName</li>
+        <li class="list-group-item">Email: @user.Email</li>
+        </ul>*@
+
+        <div class="card-body" >
+            <button type="button" @onclick="(async () => await  NavigateToUserlist())" class="btn btn-success">Back</button>
+            <button type="button" @onclick="(async () => await  NavigateToUpdateUser(user.Id))" class="btn btn-primary">Edit</button>
+        </div>
+    </div>
+</div>
+
+
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    protected UserEntity user = new();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        //string apiUrl = "https://localhost:7211/api/students/get-students-list";
+        //var response = await Http.GetAsync(apiUrl);
+        //response.EnsureSuccessStatusCode();
+        //string responseBodyJson = await response.Content.ReadAsStringAsync();
+
+        //var studentsLists = JsonConvert.DeserializeObject<List<StudentEntity>>(responseBodyJson);
+
+        var userlist = UserServices.GetAllUsers();
+
+
+        user = userlist.Where(x => x.Id == Id).FirstOrDefault();
+    }
+
+    protected async Task NavigateToUserlist()
+    {
+        string pageURL = $"/user-list";
+
+        NavigationManager.NavigateTo(pageURL);
+    }
+
+    protected async Task NavigateToUpdateUser(int userId)
+    {
+        string pageURL = $"/update-user/{userId.ToString()}";
+
+        NavigationManager.NavigateTo(pageURL);
+    }
+}
